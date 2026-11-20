@@ -6,50 +6,63 @@ A Lean 4 formalization of the classical equivalence between the Riemann Hypothes
 
 ## Statements
 
+The equivalence:
+
 ```lean
 theorem riemannHypothesis_iff_chebyshev_psi_sub_isBigO :
     RiemannHypothesis ↔
       ∀ ε : ℝ, 0 < ε →
         (fun x : ℝ => Chebyshev.psi x - x) =O[Filter.atTop] fun x : ℝ => x ^ (1 / 2 + ε)
+```
 
+The sharp bounds under RH:
+
+```lean
 theorem chebyshev_psi_sub_isBigO_sqrt_mul_log_sq_of_riemannHypothesis (hRH : RiemannHypothesis) :
     (fun x : ℝ => Chebyshev.psi x - x) =O[Filter.atTop]
       fun x : ℝ => Real.sqrt x * Real.log x ^ 2
 
-theorem chebyshev_theta_sub_isBigO_of_riemannHypothesis (hRH : RiemannHypothesis) :
-    ∀ ε : ℝ, 0 < ε →
-      (fun x : ℝ => Chebyshev.theta x - x) =O[Filter.atTop] fun x : ℝ => x ^ (1 / 2 + ε)
+theorem chebyshev_theta_sub_isBigO_sqrt_mul_log_sq_of_riemannHypothesis (hRH : RiemannHypothesis) :
+    (fun x : ℝ => Chebyshev.theta x - x) =O[Filter.atTop]
+      fun x : ℝ => Real.sqrt x * Real.log x ^ 2
 
-theorem primeCounting_sub_integral_isBigO_of_riemannHypothesis (hRH : RiemannHypothesis) :
-    ∀ ε : ℝ, 0 < ε →
-      (fun x : ℝ => (Nat.primeCounting ⌊x⌋₊ : ℝ) - ∫ t in (2 : ℝ)..x, 1 / Real.log t)
-        =O[Filter.atTop] fun x : ℝ => x ^ (1 / 2 + ε)
+theorem primeCounting_sub_integral_isBigO_sqrt_mul_log_of_riemannHypothesis
+    (hRH : RiemannHypothesis) :
+    (fun x : ℝ => (Nat.primeCounting ⌊x⌋₊ : ℝ) - ∫ t in (2 : ℝ)..x, 1 / Real.log t)
+      =O[Filter.atTop] fun x : ℝ => Real.sqrt x * Real.log x
 
-theorem exists_prime_mem_Ioc_of_riemannHypothesis (hRH : RiemannHypothesis) :
-    ∀ ε : ℝ, 0 < ε → ∀ᶠ x : ℝ in Filter.atTop,
-      ∃ p : ℕ, p.Prime ∧ x < p ∧ (p : ℝ) ≤ x + x ^ (1 / 2 + ε)
+theorem exists_prime_mem_Ioc_sqrt_mul_log_sq_of_riemannHypothesis (hRH : RiemannHypothesis) :
+    ∃ C : ℝ, 0 < C ∧ ∀ᶠ x : ℝ in Filter.atTop,
+      ∃ p : ℕ, p.Prime ∧ x < p ∧ (p : ℝ) ≤ x + C * Real.sqrt x * Real.log x ^ 2
 ```
 
-That is: RH holds if and only if `ψ(x) = x + O(x^(1/2+ε))` for every `ε > 0`; under RH one has von Koch's sharp form `ψ(x) = x + O(√x · log² x)`; and under RH, `θ(x) = x + O(x^(1/2+ε))`, `π(x) = ∫₂ˣ dt / log t + O(x^(1/2+ε))`, and every interval `(x, x + x^(1/2+ε)]` with `x` large contains a prime. The two directions of the equivalence are also available separately, as `chebyshev_psi_sub_isBigO_of_riemannHypothesis` and `riemannHypothesis_of_chebyshev_psi_sub_isBigO`.
+That is:
 
-`RiemannHypothesis`, `Chebyshev.psi`, `Chebyshev.theta` and `Nat.primeCounting` are Mathlib's own definitions. The statements use nothing defined in this repository or in PrimeNumberTheoremAnd; the logarithmic integral is written out as an integral so that no auxiliary definition is involved.
+- RH holds if and only if `ψ(x) = x + O(x^(1/2+ε))` for every `ε > 0`.
+- Under RH, `ψ(x) = x + O(√x · log² x)` and `θ(x) = x + O(√x · log² x)` (von Koch's bounds).
+- Under RH, `π(x) = ∫₂ˣ dt / log t + O(√x · log x)`.
+- Under RH, for large `x` there is a prime in `(x, x + C · √x · log² x]`.
+
+The two directions of the equivalence are available separately (`chebyshev_psi_sub_isBigO_of_riemannHypothesis`, `riemannHypothesis_of_chebyshev_psi_sub_isBigO`), as are the weaker `x^(1/2+ε)` versions of the statements for `θ`, `π` and short intervals, which were proved first.
+
+`RiemannHypothesis`, `Chebyshev.psi`, `Chebyshev.theta`, `Nat.primeCounting` and `Real.sqrt` are Mathlib's own definitions. The statements use nothing defined in this repository or in PrimeNumberTheoremAnd; the logarithmic integral is written out as an integral so that no auxiliary definition is involved.
 
 ## What this is, and what it is not
 
 - **Nothing here proves RH.** The first theorem is an equivalence between RH and a statement about primes that is just as open; the others say "if RH, then …".
 - **The mathematics is classical**, usually attributed to von Koch (1901). The contribution here is the machine-checked proof.
 - **Most of the machinery for "RH ⇒ error term" is not ours.** The smoothed Chebyshev function, its closeness to `ψ`, the Mellin calculus and the contour shift with its residue are theorems of the PrimeNumberTheoremAnd project (Kontorovich, Tao and collaborators), which uses them for its "medium" prime number theorem. What is added here is the input that RH provides (holomorphy and a logarithmic bound for `ζ'/ζ` to the right of the critical line), the estimates of the shifted contour at `Re s = 1/2 + δ`, the choice of parameters, and the passage from `ψ` to `θ` and `π`. The converse direction does not use PrimeNumberTheoremAnd at all: it imports only Mathlib.
-- **The sharp form is proved for `ψ` only.** `ψ(x) = x + O(√x · log² x)` under RH is von Koch's bound. The statements for `θ`, `π` and short intervals are still the `ε` versions, where an arbitrarily small power of `x` is lost; the sharp `π(x) = li(x) + O(√x · log x)` is not included. Explicit constants are not tracked. The statement on primes in short intervals is far from Legendre's or Cramér's conjectures, which do not follow from RH.
+- **No explicit constants.** All bounds are `O(·)` statements with unspecified constants. The short-interval statement is weaker than Cramér's conditional bound `O(√x · log x)` for prime gaps, and far from Legendre's or Cramér's conjectures, which do not follow from RH.
 - **The equivalence is stated for `ψ` only.** For `θ` and `π` only the direction from RH is proved.
 - **Novelty.** At the pinned commit, PrimeNumberTheoremAnd uses `RiemannHypothesis` as a hypothesis only in statements about prime gaps, and we found no Lean proof of this implication there, in Mathlib, or through GitHub code search. That is a bounded search, not a guarantee; we have not asked on the Lean Zulip.
 
 ## Verification status
 
 - `lake build` succeeds with Lean `v4.35.0` and PrimeNumberTheoremAnd at commit `a4fb6989b07e9c76b511807ae93e33e25b820e9b` (which pins Mathlib). CI rebuilds on every push, scans the sources for `sorry` and escape hatches, and fails if a main theorem uses a non-standard axiom.
-- `#print axioms` on the seven theorems reports only `propext`, `Classical.choice`, `Quot.sound`.
+- `#print axioms` on the ten theorems reports only `propext`, `Classical.choice`, `Quot.sound`.
 - **About `sorry` in the dependency.** PrimeNumberTheoremAnd contains unfinished parts (`sorry`) elsewhere. None of them is used: a `sorry` anywhere in the dependency chain of a theorem shows up as the axiom `sorryAx`, and it does not appear above.
 - No `sorry`, `axiom`, `native_decide`, `unsafe`, `implemented_by`, `@[extern]`, `opaque` or `set_option` in the sources of this repository.
-- Replayed through the kernel with `leanchecker`, one module at a time: all fourteen modules pass.
+- Replayed through the kernel with `leanchecker`, one module at a time: all fifteen modules pass.
 - Not yet reviewed by a human expert.
 
 ## How to check it yourself
@@ -60,7 +73,7 @@ lake build              # also compiles the needed part of PrimeNumberTheoremAnd
 lake env lean Check.lean
 ```
 
-The last command prints, for each of the seven theorems, `depends on axioms: [propext, Classical.choice, Quot.sound]`.
+The last command prints, for each of the ten theorems, `depends on axioms: [propext, Classical.choice, Quot.sound]`.
 
 ## Proof outline
 
@@ -93,6 +106,7 @@ Let `ψ_ε` be the smoothed Chebyshev function of PrimeNumberTheoremAnd, a verti
 | `RHPrimeError/Sharp/Residues.lean` | Residue theorem on a rectangle for finitely many simple poles; the contour identity across the critical line |
 | `RHPrimeError/Sharp/Bounds.lean` | Bounds for the left side, the horizontal sides and the sum over zeros |
 | `RHPrimeError/Sharp/Main.lean` | The sharp bound for `ψ` |
+| `RHPrimeError/Sharp/PrimeCounting.lean` | The sharp bounds for `θ` and `π`, and primes in short intervals |
 
 ## How it was produced
 
