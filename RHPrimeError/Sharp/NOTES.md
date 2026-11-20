@@ -6,7 +6,7 @@ Status: fully formalised (no `sorry`) in `Landau.lean`, `ZetaLocal.lean` (B1–B
 Notation: `ζ₁(s) = (s - 1) ζ(s)` (entire, `ζ₁(1) = 1`; Mathlib's `riemannZeta₁`),
 `L(τ) = log(|τ| + 3) ≥ 1`. `ν` is a fixed admissible smoothing function, `M_ε = 𝓜(Smooth1 ν ε)`,
 `h(s) = M_ε(s) X^s` (holomorphic on `Re s > 0`), `G = -(ζ'/ζ) h` (the integrand
-`SmoothedChebyshevIntegrand ν ε X` of PNT+).
+`SmoothedChebyshevIntegrand ν ε X` of PrimeNumberTheoremAnd, "PNT+" below).
 
 ## A. Landau's lemma (factorised form)  — `Landau.lean`
 
@@ -39,7 +39,7 @@ By induction `f₁ = P₁ g₁`. On `closedBall c r`, `|D| ≥ r² - r₂ r > 0`
   nonzero at `ρ`);
 * if `z ∉ Z` and `g z ≠ 0`: `f'/f(z) = Σ_{ρ ∈ Z} 1/(z - ρ) + g'/g(z)`.
 
-## B. Zeros of zeta  — `ZetaZeros.lean`
+## B. Zeros of zeta  — `ZetaLocal.lean` (B1–B3), `ZetaZeros.lean` (B4–B6)
 
 **B1 (growth).** For `Re s > 0`: `‖ζ₁(s)‖ ≤ (‖s‖ + 1)/2 + ‖s‖ ‖s - 1‖ / Re s`.
 From PNT+ `Zeta0EqZeta` with `N = 1`:
@@ -123,15 +123,17 @@ by the above, using `log(T + 4) ≤ 3 log X` for `X ≥ 4`,
 `|I₃₇| ≤ C √X log² X + C X^{1/4} log² X + C X^{3/4} log² X / X² ≤ C' √X log² X`.
 Hence `ψ(X) - X = O(√X log² X)`. ∎
 
-## Deviations from the suggested plan
+## Design choices
 
-* Centre `3/2 + iτ` instead of `2 + iτ` (PNT+ already has the uniform lower bound
-  `ZetaFixedLowerBound` on `Re s = 3/2`).
+* Discs are centred at `3/2 + iτ` because PrimeNumberTheoremAnd already has the uniform lower
+  bound `ZetaFixedLowerBound` on `Re s = 3/2`.
 * Lemma A is stated as a factorisation `f = ∏ (z - ρ) · g` rather than through `f'/f`; the
   logarithmic-derivative identity, the zero count, and "count = analytic order" are corollaries.
-* Residue identity: route (a), but the global holomorphic part is obtained by applying Lemma A
-  on one big disc containing `R_T` (no quantitative information is used there), which avoids a
-  separate finiteness/removable-singularity argument. Multiplicities of the big-disc multiset and
-  of the local multisets are compared through `analyticOrderAt`.
+* Residue identity: the global holomorphic part is obtained by applying Lemma A on one big disc
+  containing `R_T` (no quantitative information is used there), which avoids a separate
+  finiteness/removable-singularity argument. Multiplicities of the big-disc multiset and of the
+  local multisets are compared through `analyticOrderAt`.
 * Good heights need no RH and no conjugation symmetry (both `Z_τ` and `Z_{-τ}` are avoided).
 * Horizontal sides use only `‖M_ε(s)‖ ≤ C₄/‖s‖` (enough since `T ≥ X²`).
+* Constants: `K` in Lemma A and the constants of B1–B6 are as in the Lean code; the numeric
+  constants of section D are indicative only.
