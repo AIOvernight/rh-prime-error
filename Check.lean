@@ -1,0 +1,5 @@
+import RHPrimeError
+
+#print axioms chebyshev_psi_sub_isBigO_of_riemannHypothesis
+#print axioms chebyshev_theta_sub_isBigO_of_riemannHypothesis
+#print axioms primeCounting_sub_integral_isBigO_of_riemannHypothesis

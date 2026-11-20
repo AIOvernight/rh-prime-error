@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lean, fetch the Mathlib cache and build
+        uses: leanprover/lean-action@v1
+
+      - name: No sorry or escape hatches in the sources
+        run: |
+          ! grep -rnE --include='*.lean' "sorry|admit|^\s*axiom |native_decide|unsafe|implemented_by|@\[extern|opaque|set_option" \
+            RHPrimeError RHPrimeError.lean
+
+      - name: Axioms of the main theorems
+        run: |
+          lake env lean Check.lean | tee axioms.raw
+          tr '\n' ' ' < axioms.raw | tr -s ' ' > axioms.txt
+          test "$(grep -o "depends on axioms" axioms.txt | wc -l)" -eq 3
+          test "$(grep -o "depends on axioms: \[propext, Classical.choice, Quot.sound\]" axioms.txt | wc -l)" -eq 3
