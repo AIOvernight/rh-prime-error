@@ -23,5 +23,5 @@ jobs:
         run: |
           lake env lean Check.lean | tee axioms.raw
           tr '\n' ' ' < axioms.raw | tr -s ' ' > axioms.txt
-          test "$(grep -o "depends on axioms" axioms.txt | wc -l)" -eq 3
-          test "$(grep -o "depends on axioms: \[propext, Classical.choice, Quot.sound\]" axioms.txt | wc -l)" -eq 3
+          test "$(grep -o "depends on axioms" axioms.txt | wc -l)" -eq 6
+          test "$(grep -o "depends on axioms: \[propext, Classical.choice, Quot.sound\]" axioms.txt | wc -l)" -eq 6
