@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/AIOvernight/rh-prime-error/actions/workflows/ci.yml/badge.svg)](https://github.com/AIOvernight/rh-prime-error/actions/workflows/ci.yml)
 
-A Lean 4 formalization of the classical equivalence between the Riemann Hypothesis and a square-root error term in the prime number theorem, with its consequences for `θ`, `π` and primes in short intervals. The direction "RH ⇒ error term" is built on top of the [PrimeNumberTheoremAnd](https://github.com/AlexKontorovich/PrimeNumberTheoremAnd) project.
+A Lean 4 formalization of the classical equivalence between the Riemann Hypothesis and a square-root error term in the prime number theorem, and of von Koch's sharp bounds for `ψ`, `θ` and `π` under RH. The direction "RH ⇒ error term" is built on top of the [PrimeNumberTheoremAnd](https://github.com/AlexKontorovich/PrimeNumberTheoremAnd) project.
 
 ## Statements
 
@@ -51,10 +51,10 @@ The two directions of the equivalence are available separately (`chebyshev_psi_s
 
 - **Nothing here proves RH.** The first theorem is an equivalence between RH and a statement about primes that is just as open; the others say "if RH, then …".
 - **The mathematics is classical**, usually attributed to von Koch (1901). The contribution here is the machine-checked proof.
-- **Most of the machinery for "RH ⇒ error term" is not ours.** The smoothed Chebyshev function, its closeness to `ψ`, the Mellin calculus and the contour shift with its residue are theorems of the PrimeNumberTheoremAnd project (Kontorovich, Tao and collaborators), which uses them for its "medium" prime number theorem. What is added here is the input that RH provides (holomorphy and a logarithmic bound for `ζ'/ζ` to the right of the critical line), the estimates of the shifted contour at `Re s = 1/2 + δ`, the choice of parameters, and the passage from `ψ` to `θ` and `π`. The converse direction does not use PrimeNumberTheoremAnd at all: it imports only Mathlib.
+- **What is ours and what is not.** For "RH ⇒ error term", the starting point is not ours: the smoothed Chebyshev function, its closeness to `ψ`, the Mellin calculus and the first contour shift (with the residue at `s = 1`) are theorems of the PrimeNumberTheoremAnd project (Kontorovich, Tao and collaborators), which uses them for its "medium" prime number theorem; a few of its bounds for ζ are used as well. Added here: the inputs that RH provides for `ζ'/ζ`; for the sharp form, Landau's lemma, the local count of zeros of ζ, a residue theorem on rectangles for several simple poles and the contour shift across the critical line; the choice of parameters; and the passage from `ψ` to `θ`, `π` and short intervals. The converse direction does not use PrimeNumberTheoremAnd at all: it imports only Mathlib.
 - **No explicit constants.** All bounds are `O(·)` statements with unspecified constants. The short-interval statement is weaker than Cramér's conditional bound `O(√x · log x)` for prime gaps, and far from Legendre's or Cramér's conjectures, which do not follow from RH.
 - **The equivalence is stated for `ψ` only.** For `θ` and `π` only the direction from RH is proved.
-- **Novelty.** At the pinned commit, PrimeNumberTheoremAnd uses `RiemannHypothesis` as a hypothesis only in statements about prime gaps, and we found no Lean proof of this implication there, in Mathlib, or through GitHub code search. That is a bounded search, not a guarantee; we have not asked on the Lean Zulip.
+- **Novelty.** At the pinned commit, PrimeNumberTheoremAnd uses `RiemannHypothesis` as a hypothesis only in statements about prime gaps, and we found no Lean proof of these results there, in Mathlib, or through GitHub code search. That is a bounded search, not a guarantee; we have not asked on the Lean Zulip.
 
 ## Verification status
 
@@ -73,11 +73,11 @@ lake build              # also compiles the needed part of PrimeNumberTheoremAnd
 lake env lean Check.lean
 ```
 
-The last command prints, for each of the ten theorems, `depends on axioms: [propext, Classical.choice, Quot.sound]`.
+The last command prints, for each of the ten theorems, `depends on axioms: [propext, Classical.choice, Quot.sound]` (for long names Lean wraps the list over three lines).
 
 ## Proof outline
 
-Let `ψ_ε` be the smoothed Chebyshev function of PrimeNumberTheoremAnd, a vertical integral of `(−ζ'/ζ)(s) · 𝓜(smooth cutoff)(s) · X^s` over `Re s = 1 + 1/log X`.
+**RH ⇒ `ψ(x) = x + O(x^(1/2+ε))`.** Let `ψ_ε` be the smoothed Chebyshev function of PrimeNumberTheoremAnd, a vertical integral of `(−ζ'/ζ)(s) · 𝓜(smooth cutoff)(s) · X^s` over `Re s = 1 + 1/log X`.
 
 1. `|ψ_ε(X) − ψ(X)| ≤ C · ε · X · log X` (PrimeNumberTheoremAnd).
 2. Under RH, `ζ'/ζ` is holomorphic on every rectangle `[σ₁, 2] × [−T, T]` minus `{1}` with `σ₁ > 1/2`, so the contour can be moved to `Re s = σ₁`, picking up the residue `≈ X` at `s = 1` (PrimeNumberTheoremAnd's contour-pull theorem, applied with RH).
@@ -110,7 +110,7 @@ Let `ψ_ε` be the smoothed Chebyshev function of PrimeNumberTheoremAnd, a verti
 
 ## How it was produced
 
-Everything in this repository was written by Claude (Anthropic) in a Claude Code session directed by the repository owner. Claude chose the proof strategy and split the work; Claude subagents, several of them in parallel, wrote the Lean proofs. The sharp bound was done by a single subagent from a proof plan, which it adjusted in several places (listed in `Sharp/NOTES.md`). All of it was checked by the Lean kernel. **No part of the Lean code has been written or reviewed line by line by a human.**
+Everything in this repository was written by Claude (Anthropic) in a Claude Code session directed by the repository owner. Claude chose the proof strategy and split the work; Claude subagents, several of them in parallel, wrote the Lean proofs. The sharp bound was done by a single subagent from a proof plan, which it adjusted in several places (listed in `RHPrimeError/Sharp/NOTES.md`). All of it was checked by the Lean kernel. **No part of the Lean code has been written or reviewed line by line by a human.**
 
 ## Context
 
@@ -118,7 +118,5 @@ This was written on 2026-11-20, the day Levent Alpöge announced a Lean formaliz
 
 Two things should be kept apart:
 
-- **What is proved here** is only the implications. They do not import his code and they remain true whether or not his proof is correct.
+- **What is proved here** is the equivalence, which has no hypothesis at all, and the implications from RH. None of them imports his code, and all of them remain true whether or not his proof is correct.
 - **What we assume, and have not checked,** is the correctness of his proof. We have not built or audited his formalization. Note also that this repository uses a newer Lean and Mathlib than his, so combining the two would require porting one of them. Until his proof is independently confirmed, the conclusions remain conditional.
-
-A companion repository, [rh-implies-lindelof](https://github.com/AIOvernight/rh-implies-lindelof), contains the Lindelöf bounds.
