@@ -1,6 +1,7 @@
 import RHPrimeError
 
 #print axioms riemannHypothesis_iff_chebyshev_psi_sub_isBigO
+#print axioms chebyshev_psi_sub_isBigO_sqrt_mul_log_sq_of_riemannHypothesis
 #print axioms chebyshev_psi_sub_isBigO_of_riemannHypothesis
 #print axioms riemannHypothesis_of_chebyshev_psi_sub_isBigO
 #print axioms chebyshev_theta_sub_isBigO_of_riemannHypothesis
