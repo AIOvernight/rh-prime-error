@@ -25,6 +25,18 @@ open Complex Set MeasureTheory Filter
 
 namespace RHPrimeError
 
+/-- A seven-term triangle inequality, in the shape produced by `SmoothedChebyshevPull1`. -/
+private lemma norm_neg_add_sub_add_le (a b c d e f g : ℂ) :
+    ‖-a + b - c + d + e + f + g‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ + ‖d‖ + ‖e‖ + ‖f‖ + ‖g‖ := by
+  have h1 := norm_add_le (-a + b - c + d + e + f) g
+  have h2 := norm_add_le (-a + b - c + d + e) f
+  have h3 := norm_add_le (-a + b - c + d) e
+  have h4 := norm_add_le (-a + b - c) d
+  have h5 := norm_sub_le (-a + b) c
+  have h6 := norm_add_le (-a) b
+  rw [norm_neg] at h6
+  linarith
+
 /-- Under RH, `|ψ X - X| ≤ C * X ^ (1 / 2) * (log X) ^ 2` for all sufficiently large `X`. -/
 theorem exists_abs_psi_sub_le_sqrt_mul_log_sq (hRH : RiemannHypothesis) :
     ∃ C : ℝ, 0 < C ∧ ∀ᶠ X : ℝ in atTop,

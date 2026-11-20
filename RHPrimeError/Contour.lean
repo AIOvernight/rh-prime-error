@@ -137,16 +137,4 @@ theorem integral_inv_one_add_abs {T : ℝ} (hT : 0 ≤ T) :
     (hcont.intervalIntegrable _ _), hneg, hpos]
   ring
 
-/-- A seven-term triangle inequality, in the shape produced by `SmoothedChebyshevPull1`. -/
-theorem norm_neg_add_sub_add_le (a b c d e f g : ℂ) :
-    ‖-a + b - c + d + e + f + g‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ + ‖d‖ + ‖e‖ + ‖f‖ + ‖g‖ := by
-  have h1 := norm_add_le (-a + b - c + d + e + f) g
-  have h2 := norm_add_le (-a + b - c + d + e) f
-  have h3 := norm_add_le (-a + b - c + d) e
-  have h4 := norm_add_le (-a + b - c) d
-  have h5 := norm_sub_le (-a + b) c
-  have h6 := norm_add_le (-a) b
-  rw [norm_neg] at h6
-  linarith
-
 end RHPrimeError
