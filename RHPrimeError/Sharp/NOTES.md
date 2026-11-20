@@ -114,7 +114,7 @@ height (B5) for `T₀`, i.e. `T ∈ [T₀, T₀ + 1]`. Write
    ≤ (5A+2) C₄ X^{1/4} log(T + 3) · 5 · 2 log(1 + T)` (`‖1/4 + it‖ ≥ (1 + |t|)/5`);
 * `‖H(±T)‖ ≤ (1/2) · C_h L(T₀ + 1/2)² · C₄/T · X^{3/4}`.
 
-Assembly as in `RHPrimeError/Main.lean` with `ε = X^{-1/2}`, `T₀ = X²`, `T ∈ [X², X² + 1]` good,
+Assembly (`Main.lean` of this directory) with `ε = X^{-1/2}`, `T₀ = X²`, `T ∈ [X², X² + 1]` good,
 `σ₁ = 3/4` in `SmoothedChebyshevPull1`:
 `ψ(X) - X = -(ψ_ε(X) - ψ(X)) + I₁ - I₂ + I₃₇ + I₈ + I₉ + (M_ε(1) - 1) X`, where
 `|ψ_ε - ψ| ≤ c₀ ε X log X = c₀ √X log X`, `|(M_ε(1) - 1) X| ≤ c ε X = c √X`,

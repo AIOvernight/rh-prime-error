@@ -1,4 +1,3 @@
-import RHPrimeError.Main
 import RHPrimeError.Sharp.Bounds
 
 /-!
@@ -7,8 +6,8 @@ import RHPrimeError.Sharp.Bounds
 We prove the sharp form of the error term in the prime number theorem under RH, due to
 von Koch: `ψ(x) - x = O(x ^ (1 / 2) * (log x) ^ 2)`, where `ψ` is the Chebyshev function.
 
-As in `RHPrimeError/Main.lean`, the smoothed Chebyshev function with smoothing parameter
-`ε = X ^ (-1 / 2)` is compared with `ψ X`, and its contour is pulled to the line `re s = 3 / 4`
+The smoothed Chebyshev function with smoothing parameter `ε = X ^ (-1 / 2)` is compared with
+`ψ X` (`SmoothedChebyshevClose`), and its contour is pulled to the line `re s = 3 / 4`
 truncated at a height `T ∈ [X ^ 2, X ^ 2 + 1]` (`SmoothedChebyshevPull1` of the
 PrimeNumberTheoremAnd project). The new ingredient is the bound
 `RHPrimeError.exists_norm_I₃₇_le_sqrt` for the vertical segment, obtained by moving it across

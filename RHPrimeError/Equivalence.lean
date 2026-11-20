@@ -1,4 +1,4 @@
-import RHPrimeError.Main
+import RHPrimeError.Epsilon
 import RHPrimeError.Converse
 
 /-!

@@ -1,5 +1,5 @@
 import RHPrimeError.Sharp.Main
-import RHPrimeError.PrimeGaps
+import RHPrimeError.Theta
 
 /-!
 # Sharp error terms for `θ` and `π` under the Riemann Hypothesis

@@ -4,14 +4,16 @@ import RHPrimeError.Mellin
 /-!
 # Contour estimates under the Riemann Hypothesis
 
-We bound the pieces of the shifted contour appearing in `SmoothedChebyshevPull1` of the
+We bound pieces of the shifted contour appearing in `SmoothedChebyshevPull1` of the
 PrimeNumberTheoremAnd project, when the contour is moved to the line `re s = σ₁` with
-`1 / 2 < σ₁ < 1`. Under the Riemann Hypothesis:
+`1 / 2 < σ₁ < 1`, and collect small lemmas used to assemble the contour pieces. Under the
+Riemann Hypothesis:
 
 * `holomorphicOn_logDeriv_riemannZeta`: `ζ' / ζ` is holomorphic on the relevant rectangle
   (minus the pole at `1`);
-* `exists_norm_I₂_le`, `exists_norm_I₈_le`: the horizontal segments are `O(X / (ε T))`;
-* `exists_norm_I₃₇_le`: the vertical segment is `O(X ^ σ₁ * (log T) ^ 2)`.
+* `exists_norm_I₂_le`, `exists_norm_I₈_le`: the horizontal segments are `O(X / (ε T))`.
+
+The vertical segment `I₃₇` is treated in `RHPrimeError/Sharp/Bounds.lean`.
 -/
 
 open Complex Set MeasureTheory
@@ -135,86 +137,16 @@ theorem integral_inv_one_add_abs {T : ℝ} (hT : 0 ≤ T) :
     (hcont.intervalIntegrable _ _), hneg, hpos]
   ring
 
-/-- Under RH, the vertical segment `I₃₇` of the shifted contour, on the line `re s = σ₁` with
-`1 / 2 < σ₁ < 1`, is `O(X ^ σ₁ * (log T) ^ 2)`, uniformly in `ε ∈ (0, 1)`. -/
-theorem exists_norm_I₃₇_le (hRH : RiemannHypothesis) {F : ℝ → ℝ} (diffF : ContDiff ℝ 1 F)
-    (suppF : F.support ⊆ Icc (1 / 2) 2) (Fnonneg : ∀ x > 0, 0 ≤ F x)
-    (mass_one : ∫ x in Ioi 0, F x / x = 1) {σ₁ : ℝ} (hσ₁ : 1 / 2 < σ₁) (hσ₁' : σ₁ < 1) :
-    ∃ C : ℝ, 0 < C ∧ ∀ X : ℝ, 0 < X → ∀ ε : ℝ, 0 < ε → ε < 1 → ∀ T : ℝ, 3 ≤ T →
-      ‖I₃₇ F ε T X σ₁‖ ≤ C * X ^ σ₁ * Real.log T ^ 2 := by
-  obtain ⟨C₂, C₂pos, hC₂⟩ := exists_norm_deriv_riemannZeta_div_le_log hRH hσ₁
-  obtain ⟨C₃, C₃pos, hC₃⟩ := exists_norm_deriv_riemannZeta_div_le_of_abs_im_le hRH hσ₁ hσ₁'
-  obtain ⟨C₄, C₄pos, hC₄⟩ := exists_norm_mellin_smooth1_le_div_norm diffF suppF Fnonneg mass_one
-  refine ⟨4 * (8 * C₃ * C₄ + 2 * C₂ * C₄), by positivity, fun X hX ε hε hε1 T hT ↦ ?_⟩
-  have hTpos : 0 < T := by linarith
-  have hlogT : 1 < Real.log T := logt_gt_one hT
-  have hXσ : 0 < X ^ σ₁ := Real.rpow_pos_of_pos hX _
-  have key : ∀ t ∈ Ioc (-T) T, ‖SmoothedChebyshevIntegrand F ε X (σ₁ + t * I)‖ ≤
-      (8 * C₃ * C₄ + 2 * C₂ * C₄) * X ^ σ₁ * Real.log T * (1 + |t|)⁻¹ := by
-    intro t ht
-    have htT : |t| ≤ T := abs_le.mpr ⟨ht.1.le, ht.2⟩
-    have hre : ((σ₁ : ℂ) + t * I).re = σ₁ := by simp
-    have him : ((σ₁ : ℂ) + t * I).im = t := by simp
-    rw [norm_smoothedChebyshevIntegrand_eq hX, hre]
-    have hM := hC₄ ε hε hε1 (σ₁ + t * I) (by rw [hre]; linarith) (by rw [hre]; linarith)
-    have hinv : 0 < (1 + |t|)⁻¹ := by positivity
-    rcases le_total |t| 3 with h3 | h3
-    · have hz := hC₃ t h3
-      have hs : (1 / 2 : ℝ) ≤ ‖(σ₁ : ℂ) + t * I‖ := by
-        have := Complex.abs_re_le_norm ((σ₁ : ℂ) + t * I)
-        rw [hre, abs_of_pos (by linarith)] at this
-        linarith
-      have hM' : ‖mellin (fun x ↦ (Smooth1 F ε x : ℂ)) (σ₁ + t * I)‖ ≤ 2 * C₄ :=
-        hM.trans (by rw [div_le_iff₀ (by linarith)]; nlinarith)
-      have h4 : 1 ≤ 4 * (1 + |t|)⁻¹ := by
-        rw [← div_eq_mul_inv, le_div_iff₀ (by positivity)]
-        linarith
-      have h5 : 1 ≤ Real.log T * (4 * (1 + |t|)⁻¹) := by nlinarith
-      have h6 : 0 ≤ 2 * C₂ * C₄ * X ^ σ₁ * Real.log T * (1 + |t|)⁻¹ := by positivity
-      calc _ ≤ C₃ * (2 * C₄) * X ^ σ₁ := by gcongr
-        _ ≤ C₃ * (2 * C₄) * X ^ σ₁ * (Real.log T * (4 * (1 + |t|)⁻¹)) :=
-          le_mul_of_one_le_right (by positivity) h5
-        _ ≤ _ := by linarith
-    · have htpos : 0 < |t| := by linarith
-      have hz := hC₂ (σ₁ + t * I) (by rw [hre]) (by rw [hre]; linarith) (by rw [him]; exact h3)
-      rw [him] at hz
-      have hz' : ‖deriv riemannZeta (σ₁ + t * I) / riemannZeta (σ₁ + t * I)‖ ≤
-          C₂ * Real.log T := hz.trans (by gcongr)
-      have hs : |t| ≤ ‖(σ₁ : ℂ) + t * I‖ := by
-        have := Complex.abs_im_le_norm ((σ₁ : ℂ) + t * I)
-        rwa [him] at this
-      have h7 : |t|⁻¹ ≤ 2 * (1 + |t|)⁻¹ := by
-        rw [← div_eq_mul_inv, le_div_iff₀ (by positivity), inv_mul_le_iff₀ htpos]
-        linarith
-      have hM' : ‖mellin (fun x ↦ (Smooth1 F ε x : ℂ)) (σ₁ + t * I)‖ ≤
-          C₄ * (2 * (1 + |t|)⁻¹) :=
-        calc _ ≤ C₄ / ‖(σ₁ : ℂ) + t * I‖ := hM
-          _ ≤ C₄ / |t| := by gcongr
-          _ = C₄ * |t|⁻¹ := div_eq_mul_inv _ _
-          _ ≤ _ := by gcongr
-      have h6 : 0 ≤ 8 * C₃ * C₄ * X ^ σ₁ * Real.log T * (1 + |t|)⁻¹ := by positivity
-      calc _ ≤ C₂ * Real.log T * (C₄ * (2 * (1 + |t|)⁻¹)) * X ^ σ₁ := by gcongr
-        _ ≤ _ := by linarith
-  have hcont : Continuous fun t : ℝ ↦
-      (8 * C₃ * C₄ + 2 * C₂ * C₄) * X ^ σ₁ * Real.log T * (1 + |t|)⁻¹ :=
-    continuous_const.mul ((continuous_const.add continuous_abs).inv₀
-      fun t ↦ (by positivity : (0 : ℝ) < 1 + |t|).ne')
-  have hint := intervalIntegral.norm_integral_le_of_norm_le (μ := volume)
-    (f := fun t : ℝ ↦ SmoothedChebyshevIntegrand F ε X (σ₁ + t * I)) (by linarith : -T ≤ T)
-    (Filter.Eventually.of_forall key) (hcont.intervalIntegrable _ _)
-  rw [intervalIntegral.integral_const_mul, integral_inv_one_add_abs hTpos.le] at hint
-  have hlog2 : Real.log (1 + T) ≤ 2 * Real.log T := by
-    have hpow : Real.log (T ^ 2) = 2 * Real.log T := by
-      rw [Real.log_pow]
-      norm_num
-    rw [← hpow]
-    exact Real.log_le_log (by linarith) (by nlinarith)
-  unfold I₃₇
-  rw [norm_mul, norm_mul, norm_I, one_mul]
-  calc _ ≤ 1 * ((8 * C₃ * C₄ + 2 * C₂ * C₄) * X ^ σ₁ * Real.log T *
-        (2 * (2 * Real.log T))) :=
-        mul_le_mul norm_one_div_two_pi_I_le_one (hint.trans (by gcongr)) (norm_nonneg _)
-          zero_le_one
-    _ = _ := by ring
+/-- A seven-term triangle inequality, in the shape produced by `SmoothedChebyshevPull1`. -/
+theorem norm_neg_add_sub_add_le (a b c d e f g : ℂ) :
+    ‖-a + b - c + d + e + f + g‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ + ‖d‖ + ‖e‖ + ‖f‖ + ‖g‖ := by
+  have h1 := norm_add_le (-a + b - c + d + e + f) g
+  have h2 := norm_add_le (-a + b - c + d + e) f
+  have h3 := norm_add_le (-a + b - c + d) e
+  have h4 := norm_add_le (-a + b - c) d
+  have h5 := norm_sub_le (-a + b) c
+  have h6 := norm_add_le (-a) b
+  rw [norm_neg] at h6
+  linarith
 
 end RHPrimeError

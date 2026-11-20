@@ -43,7 +43,7 @@ That is:
 - Under RH, `π(x) = ∫₂ˣ dt / log t + O(√x · log x)`.
 - Under RH, for large `x` there is a prime in `(x, x + C · √x · log² x]`.
 
-The two directions of the equivalence are available separately (`chebyshev_psi_sub_isBigO_of_riemannHypothesis`, `riemannHypothesis_of_chebyshev_psi_sub_isBigO`), as are the weaker `x^(1/2+ε)` versions of the statements for `θ`, `π` and short intervals, which were proved first.
+The two directions of the equivalence are available separately (`chebyshev_psi_sub_isBigO_of_riemannHypothesis`, `riemannHypothesis_of_chebyshev_psi_sub_isBigO`), as are the weaker `x^(1/2+ε)` versions of the statements for `θ`, `π` and short intervals, which are corollaries of the sharp ones.
 
 `RiemannHypothesis`, `Chebyshev.psi`, `Chebyshev.theta`, `Nat.primeCounting` and `Real.sqrt` are Mathlib's own definitions. The statements use nothing defined in this repository or in PrimeNumberTheoremAnd; the logarithmic integral is written out as an integral so that no auxiliary definition is involved.
 
@@ -63,7 +63,7 @@ The two directions of the equivalence are available separately (`chebyshev_psi_s
 - `#print axioms` on the ten theorems reports only `propext`, `Classical.choice`, `Quot.sound`.
 - **About `sorry` in the dependency.** PrimeNumberTheoremAnd contains unfinished parts (`sorry`) elsewhere. None of them is used: a `sorry` anywhere in the dependency chain of a theorem shows up as the axiom `sorryAx`, and it does not appear above.
 - No `sorry`, `axiom`, `native_decide`, `unsafe`, `implemented_by`, `@[extern]`, `opaque` or `set_option` in the sources of this repository.
-- Replayed through the kernel with `leanchecker`, one module at a time: all fifteen modules pass.
+- Replayed through the kernel with `leanchecker`, one module at a time: all fourteen modules pass.
 - Not yet reviewed by a human expert.
 
 ## How to check it yourself
@@ -78,16 +78,17 @@ The last command prints, for each of the ten theorems, `depends on axioms: [prop
 
 ## Proof outline
 
-**RH ⇒ `ψ(x) = x + O(x^(1/2+ε))`.** Let `ψ_ε` be the smoothed Chebyshev function of PrimeNumberTheoremAnd, a vertical integral of `(−ζ'/ζ)(s) · 𝓜(smooth cutoff)(s) · X^s` over `Re s = 1 + 1/log X`.
+**RH ⇒ `ψ(x) = x + O(√x · log² x)`.** Let `ψ_ε` be the smoothed Chebyshev function of PrimeNumberTheoremAnd, a vertical integral of `G(s) = (−ζ'/ζ)(s) · 𝓜(smooth cutoff)(s) · X^s` over `Re s = 1 + 1/log X`. Take `ε = X^(−1/2)` and a height `T` between `X²` and `X² + 1`.
 
 1. `|ψ_ε(X) − ψ(X)| ≤ C · ε · X · log X` (PrimeNumberTheoremAnd).
-2. Under RH, `ζ'/ζ` is holomorphic on every rectangle `[σ₁, 2] × [−T, T]` minus `{1}` with `σ₁ > 1/2`, so the contour can be moved to `Re s = σ₁`, picking up the residue `≈ X` at `s = 1` (PrimeNumberTheoremAnd's contour-pull theorem, applied with RH).
-3. Under RH, `|ζ'/ζ(s)| ≤ C log |t|` for `σ₁ ≤ Re s ≤ 2`, `|t| ≥ 3`: a zero-free disc, a polynomial bound for ζ, and Borel–Carathéodory.
-4. The Mellin transform of the smooth cutoff is `O(1/|s|)` uniformly in `ε`, so the integral over the new vertical segment is `O(X^σ₁ · log² T)`; the horizontal segments and the tails are negligible.
-5. Take `σ₁ = 1/2 + δ`, `ε = X^(−1/2)` and `T = X²`: `ψ(X) − X = O(X^(1/2+δ) · log² X)`.
-6. `ψ − θ = O(√x)` and partial summation give the statements for `θ` and `π` (Mathlib); comparing `θ(x + h)` with `θ(x)` gives primes in short intervals.
+2. Under RH, `ζ'/ζ` is holomorphic on `[3/4, 2] × [−T, T]` minus `{1}`, so the contour can be moved to `Re s = 3/4`, picking up the residue `≈ X` at `s = 1` (PrimeNumberTheoremAnd's contour-pull theorem, applied with RH). The tails and the horizontal sides are negligible; for the latter one uses `|ζ'/ζ(s)| ≤ C log |t|` to the right of the critical line, from a zero-free disc and Borel–Carathéodory.
+3. The remaining segment is moved from `Re s = 3/4` across the critical line to `Re s = 1/4`, picking up a residue at every zero. Keeping the contour to the right of the line and bounding `ζ'/ζ` in absolute value cannot give `log²`.
+4. The inputs for step 3 come from a form of Landau's lemma (a holomorphic function bounded on a disc factors as a product over its zeros times a zero-free function with controlled logarithmic derivative, with a bound on the number of zeros), applied to `(s − 1)ζ(s)`: at most `C log t` zeros at height `t`, `ζ'/ζ = O(log t)` on `Re s = 1/4` under RH, and heights `T` that stay away from all zeros.
+5. The Mellin transform of the smooth cutoff is `O(1/|s|)` uniformly in `ε`. Under RH each residue has size `√X / |ρ|`, and `Σ 1/|ρ| ≪ log² T`; the segment at `Re s = 1/4` contributes `O(X^(1/4) · log² T)`.
 
-**Sharp form.** Keeping the contour to the right of the critical line and bounding `ζ'/ζ` in absolute value cannot give `log²`. Instead the contour is moved from `Re s = 3/4` across the critical line to `Re s = 1/4`, picking up a residue at every zero. The inputs are a form of Landau's lemma (a holomorphic function bounded on a disc factors as a product over its zeros times a zero-free function with controlled logarithmic derivative, with a bound on the number of zeros), applied to `(s − 1)ζ(s)`: at most `C log t` zeros at height `t`, `ζ'/ζ = O(log t)` on `Re s = 1/4` under RH, and heights `T` that stay away from all zeros. Under RH each residue has size `√X / |ρ|`, and `Σ 1/|ρ| ≪ log² T`. A paper proof is in `RHPrimeError/Sharp/NOTES.md`.
+A paper proof with the constants is in `RHPrimeError/Sharp/NOTES.md`.
+
+**`θ`, `π`, short intervals.** `ψ − θ = O(√x)` and partial summation (Mathlib) give the bounds for `θ` and `π`; comparing `θ(x + h)` with `θ(x)` gives primes in short intervals. The `x^(1/2+ε)` versions follow since `√x · logⁿ x = o(x^(1/2+ε))`.
 
 **Converse.** If `ψ(x) − x = O(x^(1/2+ε))` for every `ε`, then by Abel summation `−ζ'/ζ(s) = s/(s−1) + s·H(s)` for `Re s > 1`, where `H(s) = ∫₁^∞ (ψ(x) − x) x^(−s−1) dx` is holomorphic on `Re s > 1/2`. By the identity theorem `ζ' + ζ·K = 0` on `Re s > 1/2`, `s ≠ 1`, with `K` holomorphic; comparing orders of vanishing, ζ cannot have a zero there. The functional equation then shows that the only zeros with `Re s < 1/2` are the trivial ones, which is Mathlib's `RiemannHypothesis`.
 
@@ -95,12 +96,8 @@ The last command prints, for each of the ten theorems, `depends on axioms: [prop
 |---|---|
 | `RHPrimeError/LogDeriv.lean` | Under RH: ζ has no zeros with `Re s > 1/2`; `‖ζ'/ζ‖ ≤ C log |t|` to the right of the critical line |
 | `RHPrimeError/Mellin.lean` | `‖𝓜(Smooth1 ν ε)(s)‖ ≤ 4 / ‖s‖`, uniformly in `ε` |
-| `RHPrimeError/Contour.lean` | Holomorphy of `ζ'/ζ` under RH; bounds for the shifted contour |
-| `RHPrimeError/Main.lean` | RH implies the error term for `ψ` |
-| `RHPrimeError/PrimeCounting.lean` | The theorems for `θ` and `π` |
-| `RHPrimeError/PrimeGaps.lean` | Primes in short intervals |
-| `RHPrimeError/Converse.lean` | The error term implies RH; also `riemannHypothesis_of_forall_riemannZeta_ne_zero`: no zeros with `Re s > 1/2` implies RH |
-| `RHPrimeError/Equivalence.lean` | The equivalence |
+| `RHPrimeError/Contour.lean` | Holomorphy of `ζ'/ζ` under RH; bounds for the horizontal sides of the first contour shift |
+| `RHPrimeError/Theta.lean` | Without RH, Mathlib only: the exact formula for `π(x) − ∫₂ˣ dt/log t` in terms of `θ`; `θ(x) < θ(y)` gives a prime in `(x, y]` |
 | `RHPrimeError/Sharp/Landau.lean` | Landau's lemma: factorisation over the zeros in a disc, zero count, formula for `f'/f` |
 | `RHPrimeError/Sharp/ZetaLocal.lean` | The factorisation for `(s − 1)ζ(s)` on discs at height `τ`, with bounds `O(log τ)` |
 | `RHPrimeError/Sharp/ZetaZeros.lean` | `ζ'/ζ` on `Re s = 1/4` under RH; heights avoiding the zeros; `Σ 1/‖ρ‖ ≪ log² T` |
@@ -108,6 +105,9 @@ The last command prints, for each of the ten theorems, `depends on axioms: [prop
 | `RHPrimeError/Sharp/Bounds.lean` | Bounds for the left side, the horizontal sides and the sum over zeros |
 | `RHPrimeError/Sharp/Main.lean` | The sharp bound for `ψ` |
 | `RHPrimeError/Sharp/PrimeCounting.lean` | The sharp bounds for `θ` and `π`, and primes in short intervals |
+| `RHPrimeError/Epsilon.lean` | The `x^(1/2+ε)` versions, as corollaries of the sharp bounds |
+| `RHPrimeError/Converse.lean` | The error term implies RH; also `riemannHypothesis_of_forall_riemannZeta_ne_zero`: no zeros with `Re s > 1/2` implies RH |
+| `RHPrimeError/Equivalence.lean` | The equivalence |
 
 ## How it was produced
 

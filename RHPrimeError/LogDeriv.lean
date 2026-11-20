@@ -241,31 +241,4 @@ theorem exists_norm_deriv_riemannZeta_div_le_log (hRH : RiemannHypothesis) {σ�
         linarith
     _ = K * (3 + |Real.log m|) * Real.log |t| := by ring
 
-/-- Under RH, `ζ' / ζ` is bounded on the segment `re s = σ₁`, `|im s| ≤ 3`, for `1 / 2 < σ₁ < 1`. -/
-theorem exists_norm_deriv_riemannZeta_div_le_of_abs_im_le (hRH : RiemannHypothesis) {σ₁ : ℝ}
-    (hσ₁ : 1 / 2 < σ₁) (hσ₁' : σ₁ < 1) :
-    ∃ C : ℝ, 0 < C ∧ ∀ t : ℝ, |t| ≤ 3 →
-      ‖deriv riemannZeta (σ₁ + t * I) / riemannZeta (σ₁ + t * I)‖ ≤ C := by
-  have hne1 : ∀ t : ℝ, (σ₁ + t * I : ℂ) ≠ 1 := by
-    intro t h
-    have := congrArg Complex.re h
-    simp at this
-    linarith
-  have hdiff : DifferentiableOn ℂ riemannZeta {1}ᶜ := fun z hz ↦
-    (differentiableAt_riemannZeta hz).differentiableWithinAt
-  have hcont : ContinuousOn
-      (fun t : ℝ ↦ deriv riemannZeta (σ₁ + t * I) / riemannZeta (σ₁ + t * I))
-      (Set.Icc (-3) 3) := by
-    intro t _
-    refine ContinuousAt.continuousWithinAt (ContinuousAt.div ?_ ?_ ?_)
-    · have h1 : ContinuousAt (deriv riemannZeta) (σ₁ + t * I) :=
-        ((hdiff.deriv isOpen_compl_singleton).continuousOn).continuousAt
-          (isOpen_compl_singleton.mem_nhds (hne1 t))
-      exact ContinuousAt.comp (f := fun t : ℝ ↦ (σ₁ + t * I : ℂ)) h1 (by fun_prop)
-    · exact ContinuousAt.comp (f := fun t : ℝ ↦ (σ₁ + t * I : ℂ))
-        (differentiableAt_riemannZeta (hne1 t)).continuousAt (by fun_prop)
-    · exact riemannZeta_ne_zero_of_half_lt_re hRH (by simpa using hσ₁) (hne1 t)
-  obtain ⟨C, hC⟩ := isCompact_Icc.exists_bound_of_continuousOn hcont
-  refine ⟨max C 1, by positivity, fun t ht ↦ (hC t (abs_le.1 ht)).trans (le_max_left _ _)⟩
-
 end RHPrimeError
