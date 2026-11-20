@@ -105,7 +105,7 @@ of `T`), and `-ζ'/ζ = -(Σ_Z 1/(s - ρ) + g'/g - 1/(s-1))`. By C1 with `φ = g
 
 ## D. Estimates and assembly  — `Bounds.lean`, `Main.lean`
 
-Let `C₄` with `‖M_ε(s)‖ ≤ C₄/‖s‖` for `0 < Re s ≤ 2` (`Mellin.lean`), `X ≥ 1`, `T ≥ 1` a good
+Let `C₄` with `‖M_ε(s)‖ ≤ C₄/‖s‖` for `0 < Re s ≤ 2` (`RHPrimeError/Mellin.lean`), `X ≥ 1`, `T ≥ 1` a good
 height (B5) for `T₀`, i.e. `T ∈ [T₀, T₀ + 1]`. Write
 `∮_{∂R_T} G = H(-T) - H(T) + V(3/4) - V(1/4)` and `I₃₇ = V(3/4)/(2πi)`. Hence
 `I₃₇ = -Σ_W h(ρ) + (V(1/4) - H(-T) + H(T))/(2πi)` and
